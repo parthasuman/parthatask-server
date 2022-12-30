@@ -49,17 +49,45 @@ async function run() {
       res.send(result);
     });
 
-    app.patch("/allTasks/:id", async (req, res) => {
+    // app.patch("/allTasks/:id", async (req, res) => {
+    //   const id = req.params.id;
+    //   const status = req.body.status;
+    //   const query = { _id: ObjectId(id) };
+    //   const updatedDoc = {
+    //     $set: {
+    //       status: status,
+    //     },
+    //   };
+    //   const result = await allTaskCollection.updateOne(query, updatedDoc);
+    //   res.send(result);
+    // });
+
+    // update
+
+    app.get("/allTasks/:id", async (req, res) => {
       const id = req.params.id;
-      const status = req.body.status;
       const query = { _id: ObjectId(id) };
-      const updatedDoc = {
+      const result = await allTaskCollection.findOne(query);
+      res.send(result);
+    });
+
+    app.put("/allTasks/:id", async (req, res) => {
+      const id = req.params.id;
+      const filter = { _id: ObjectId(id) };
+      const user = req.body;
+      const option = { upsert: true };
+      const updateUser = {
         $set: {
-          status: status,
+          name: user.name,
         },
       };
-      const result = await allTaskCollection.updateOne(query, updatedDoc);
+      const result = await allTaskCollection.updateOne(
+        filter,
+        updateUser,
+        option
+      );
       res.send(result);
+      console.log(user);
     });
 
     app.delete("/allTasks/:id", async (req, res) => {
@@ -89,13 +117,6 @@ async function run() {
       const result = await allTaskCollection.updateOne(filter, updatedDoc);
       res.send(result);
     });
-
-    // app.get("/allTasks", async (req, res) => {
-    //   const allTasks = await allTaskCollection
-    //     .find({ advertised: true })
-    //     .toArray();
-    //   res.send(allTasks);
-    // });
 
     app.get("/ads", async (req, res) => {
       const ads = await allTaskCollection.find({ advertised: true }).toArray();
